@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	styleLogo = NewStyle("#ffffd7", "#ff8700", true)
-	styleHelp = NewStyle("#4e4e4e", "", true)
+	styleLogo = NewStyle("0", "3", true)
+	styleHelp = NewStyle("8", "", true)
 )
 
 const (

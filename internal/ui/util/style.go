@@ -5,7 +5,6 @@ import (
 	"regexp"
 
 	c "github.com/achannarasappa/ticker/internal/common"
-	"github.com/lucasb-eyer/go-colorful"
 	te "github.com/muesli/termenv"
 )
 
@@ -15,8 +14,8 @@ const (
 
 var (
 	p                  = te.ColorProfile()
-	stylePricePositive = newStyleFromGradient("#C6FF40", "#779929")
-	stylePriceNegative = newStyleFromGradient("#FF7940", "#994926")
+	stylePricePositive = newStyleFromGradient("10", "2")
+	stylePriceNegative = newStyleFromGradient("9", "1")
 )
 
 func NewStyle(fg string, bg string, bold bool) func(string) string {
@@ -67,9 +66,9 @@ func stylePrice(percent float64, text string) string {
 
 }
 
-func newStyleFromGradient(startColorHex string, endColorHex string) func(float64, string) string {
-	c1, _ := colorful.Hex(startColorHex)
-	c2, _ := colorful.Hex(endColorHex)
+func newStyleFromGradient(startColorAnsi string, endColorAnsi string) func(float64, string) string {
+	c1 := te.ConvertToRGB(te.ColorProfile().Color(startColorAnsi))
+	c2 := te.ConvertToRGB(te.ColorProfile().Color(endColorAnsi))
 
 	return func(percent float64, text string) string {
 
@@ -94,39 +93,39 @@ func getNormalizedPercentWithMax(percent float64, maxPercent float64) float64 {
 func GetColorScheme(colorScheme c.ConfigColorScheme) c.Styles {
 
 	return c.Styles{
-		Text: NewStyle(
-			getColorOrDefault(colorScheme.Text, "#d0d0d0"),
-			"",
-			false,
-		),
+		Text: NewStyleFromDefaults(false),
 		TextLight: NewStyle(
-			getColorOrDefault(colorScheme.TextLight, "#8a8a8a"),
+			"6",
 			"",
 			false,
 		),
-		TextBold: NewStyle(
-			getColorOrDefault(colorScheme.Text, "#d0d0d0"),
-			"",
-			true,
-		),
+		TextBold: NewStyleFromDefaults(true),
 		TextLabel: NewStyle(
-			getColorOrDefault(colorScheme.TextLabel, "#626262"),
+			"6",
 			"",
 			false,
 		),
 		TextLine: NewStyle(
-			getColorOrDefault(colorScheme.TextLine, "#3a3a3a"),
+			"8",
 			"",
 			false,
 		),
 		TextPrice: stylePrice,
 		Tag: NewStyle(
-			getColorOrDefault(colorScheme.TextTag, "#8a8a8a"),
-			getColorOrDefault(colorScheme.BackgroundTag, "#303030"),
+			"15",
+			"8",
 			false,
 		),
 	}
 
+}
+
+func NewStyleFromDefaults(bold bool) func(string) string {
+	s := te.Style{}.Foreground(te.ForegroundColor())
+	if bold {
+		s = s.Bold()
+	}
+	return s.Styled
 }
 
 func getColorOrDefault(colorConfig string, colorDefault string) string {
